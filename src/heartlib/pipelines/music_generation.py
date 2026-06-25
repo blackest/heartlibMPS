@@ -10,6 +10,7 @@ import torchaudio
 import json
 from contextlib import contextmanager
 import gc
+import soundfile as sf
 
 
 def _resolve_paths(pretrained_path: str, version: str):
@@ -339,8 +340,8 @@ class HeartMuLaGenPipeline:
         frames = model_outputs["frames"].to(self.codec_device)
         wav = self.codec.detokenize(frames)
         self._unload()
-        torchaudio.save(save_path, wav.to(torch.float32).cpu(), 48000)
-
+        #torchaudio.save(save_path, wav.to(torch.float32).cpu(), 48000)
+        sf.write(save_path, wav.to(torch.float32).cpu().numpy().T, 48000)
     def __call__(self, inputs: Dict[str, Any], **kwargs):
         preprocess_kwargs, forward_kwargs, postprocess_kwargs = (
             self._sanitize_parameters(**kwargs)
